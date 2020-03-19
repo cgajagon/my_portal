@@ -1,0 +1,26 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-md">
+  <div class="modal-content">
+      <form role="form" action="{% url 'projects:project_update_status' project.pk %}" method="post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Change Status of Project</h3>
+          <h4>{{object.title}}</h4>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          <h5>Customer: {{object.customer.vendor_name}}</h5>
+          <h5>Part Number Affected: {{object.part_number_affected}}</h5>
+          <hr>
+          {{form|crispy}}
+        </div>
+        <div class="modal-footer">
+          <div class="col-lg-12 text-right">
+            <input class="btn btn-primary" type="submit" value="Update">
+            <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>

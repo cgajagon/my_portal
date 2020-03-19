@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Viewflow - Reusable Workflow Library</title>
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav-wrapper">
+        <ul>
+          <li {% block nav_home_cls%}{% endblock %}>
+            <a href="/"><i class="material-icons">home</i></a>
+          </li>
+          {% if user.is_authenticated %}
+          <li {% block nav_parcels_cls %}{% endblock %}>
+            <a href="{% url 'tooling:index' %}"><i class="material-icons left">mail_outline</i>Parcels</a>
+          </li>
+          <li {% block nav_queue_cls %}{% endblock %}>
+            <a href="{% url 'tooling:queue' %}">
+              <i class="material-icons left">assignment</i>Queue
+              {% if queue_count %}<sup class="red" style="padding:0 5px 0 5px">{{ queue_count }}</sup>{% endif %}
+            </a>
+          </li>
+          <li {% block nav_tasks_cls %}{% endblock %}>
+            <a href="{% url 'tooling:tasks' %}">
+              <i class="material-icons left">assignment_late</i>Tasks
+              {% if inbox_count %}<sup class="red" style="padding:0 5px 0 5px">{{ inbox_count }}</sup>{% endif %}
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+    {% if user.is_authenticated and perms.audit.create_audit %}
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large waves-effect waves-light red" href="{% url 'tooling:start' %}">Add</a>
+    </div>
+    {% endif %}
+
+  </body>
+</html>

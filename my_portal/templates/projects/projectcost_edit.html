@@ -1,0 +1,26 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-md">
+  <div class="modal-content">
+      {% if object %}
+      <form role="form" action="{% url 'projects:projectcost_edit' project_related object.pk %}" method="post">
+      {% else %}
+      <form role="form" action="{% url 'projects:projectcost_create' project_related %}" method="post">
+      {% endif %}
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Cost</h3>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          {{form|crispy}}
+        </div>
+        <div class="modal-footer">
+          <div class="col-lg-12 text-right">
+              <input class="btn btn-primary" type="submit" value="Save">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>

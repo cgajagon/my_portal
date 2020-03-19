@@ -1,0 +1,57 @@
+{% extends "base_site.html" %}
+
+{% block title %} Dashboard {% endblock title %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <!-- top tiles -->
+  <div class="row tile_count">
+    <div class="col-sm-4 col-xs-6 tile_stats_count">
+      <span class="count_top"> Total Tools</span>
+      <div class="count green">{{ num_tools }}</div>
+    </div>
+    <div class="col-sm-4 col-xs-6 tile_stats_count">
+      <span class="count_top"><i class="fa fa-cog"></i> Tools Active</span>
+      <div class="count">{{num_production_tools}}</div>
+    </div>
+    <div class="col-sm-4 col-xs-6 tile_stats_count">
+      <span class="count_top"><i class="fa fa-wrench"></i> Tools in Development</span>
+      <div class="count">{{num_development_tools}}</div>
+    </div>
+  </div>
+  <!-- /top tiles -->
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="dashboard_graph">
+
+        <div class="row x_title">
+          <div class="col-md-6">
+            <h3>Watch List</h3>
+          </div>
+        </div>
+
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          {% for tool in watchlist %}
+          <ul>
+            <li>
+              <p>{{tool.tool_serial_number}}</p>
+            </li>
+          </ul>
+          {% endfor %}
+        </div>
+
+        <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
+        </div>
+
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+{{ block.super}}
+{% endblock javascripts %}

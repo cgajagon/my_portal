@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-md">
+  <div class="modal-content">
+      <form role="form" action="{% url 'projects:projectcost_delete' project_pk object.pk %}" method="post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Delete Cost</h3>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          {{form|crispy}}
+          <p>Are you sure you want to delete "{{ object }}"?</p>
+        </div>
+        <div class="modal-footer">
+          <div class="col-lg-12 text-right">
+            <input class="btn btn-danger" type="submit" value="Delete">
+            <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>

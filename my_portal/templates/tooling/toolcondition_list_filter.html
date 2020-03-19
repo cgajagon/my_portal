@@ -1,0 +1,104 @@
+{% extends "base_site.html" %}
+
+{% block title %} Condition Assessment {% endblock title %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>
+          Assessment - {{year}} - {{location.vendor_name}}
+        </h3>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="x_panel">
+            <div class="x_content">
+              <table id="datatable-buttons" class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>Tool Serial Number</th>
+                    <th>Part Produced</th>
+                    <th>Year Build</th>
+                    <th>Total Expected Life</th>
+                    <th>Remaining Expected Life</th>
+                    <th>Tool Overall Condition</th>
+                    <th>Risk Estimation</th>
+                    <th>Risk Assessment</th>
+                    <th>Comments</th>
+                    <th>Date Evaluation</th>
+                    <th># Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for assessment in assessment_list %}
+                  <tr>
+                    <td>
+                      <a type="button" class="btn btn-default btn-xs" href="{% url 'tooling:tool_detail' assessment.tool_inspected %}">{{assessment.tool_inspected}}</a>
+                    </td>
+                    <td>
+                      {% for part in assessment.tool_inspected.part_produced.all %}
+                      <a type="button" class="btn btn-default btn-xs" href="#">{{part}}</a>
+                      {% endfor %}
+                    </td>
+                    <td>{{assessment.tool_inspected.year_built}}</td>
+                    <td>{{assessment.life}}</td>
+                    <td>{{assessment.life_remaining}}</td>
+                    <td>{{assessment.tool_condition}}</td>
+                    <td class="text-center">
+                      {% if assessment.get_risk_evaluated <= 1 %} 
+                      <i class="fa fa-circle red"></i> High
+                      {% elif assessment.get_risk_evaluated > 1 and assessment.get_risk_evaluated <= 3 %} 
+                      <i class="fa fa-circle" style="color:yellow"></i> Medium
+                      {% elif assessment.get_risk_evaluated > 3 %}
+                      <i class="fa fa-circle green"></i> Low
+                      {% elif assessment.get_risk_evaluated %}
+                      {% endif %}
+                    </td>
+
+                    {% if assessment.risk == "High"  %}
+                    <td class="text-center"><i class="fa fa-circle red"></i> High <br></td>
+                    {% elif assessment.risk == "Medium" %}
+                    <td><i class="fa fa-circle" style="color:yellow"></i> Medium <br></td>
+                    {% elif assessment.risk == "Low" %}
+                    <td><i class="fa fa-circle green"></i> Low <br></td>
+                    {% endif %}
+                    <td>{{assessment.comments}}</td>
+                    <td>{{assessment.date_assessment}}</td>
+                    <td></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Pop Up-->
+  <div id="popup" class="modal fade" role="dialog">
+
+  {% endblock content %}
+
+  {% block javascripts %}
+  {{ block.super }}
+
+  <script>
+    function open_modal(url) {
+      $('#popup').load(url, function () {
+        $(this).modal('show');
+      });
+      return false;
+    }
+
+  </script>
+
+  {% endblock javascripts %}

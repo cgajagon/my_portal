@@ -1,0 +1,64 @@
+{% extends "base_site.html" %}
+
+{% block title %} Inventory {% endblock title %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>
+          Part List
+        </h3>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_content">
+            <table id="datatable-buttons" class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th>Part Number</th>
+                  <th>Revision Letter</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>#Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for part in part_list %}
+                <tr>
+                  <td class="text-center">{{part.part_number}}</td>
+                  <td class="text-center">{{part.revision}}</td>
+                  <td class="text-center">{{part.part_description}}</td>
+                  <td class="text-center">
+                    {% if part.status == 'Released' %}
+                    <span class="label label-primary">Released</span>
+                    {% elif part.status == 'In Development' %}
+                    <span class="label label-success">In Development</span>
+                    {% elif part.status == 'Obsolete' %}
+                    <span class="label label-default">Obsolete</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <a href="{% url 'tooling:engineering_change' part.pk %}" class="btn btn-primary btn-xs"> Change</a>
+                    <a href="{% url 'tooling:part_update' part.pk %}" class=" btn btn-info btn-xs"> Edit</a>
+                    <a href="{% url 'tooling:tool_part_list' part.part_number %}" class=" btn btn-success btn-xs"> Tooling</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

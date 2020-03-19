@@ -1,0 +1,289 @@
+{% extends "base_site.html" %}
+{% load l10n %}
+
+today = datetime.now()
+
+{% block title %} Project Details {% endblock title %}
+
+{% block stylesheets %}
+{{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2># {{project.finance_ID|unlocalize}} - {{project.title}} ({{project.status}})</h2>
+            <div class="clearfix"></div>
+          </div>
+
+          <div class="x_content">
+
+            <div class="col-md-9 col-sm-9 col-xs-12">
+
+              <!-- Stats Overview-->
+              <ul class="stats-overview">
+                <li>
+                  <span class="name"> Total Cost </span>
+                  <span class="value text-success"> $ {{cost.total_cost|floatformat:1 }} </span>
+                </li>
+                <li class="name">
+                  <span class="name"> Duration </span>
+                  <span class="value text-success"> {{duration}} </span>
+                </li>
+              </ul>
+              <br />
+
+              <!-- Tabs-->
+              <div class="" role="tabpanel" data-example-id="togglable-tabs">
+
+                <!-- Tabs Headers-->
+                <ul id="myTab1" class="nav nav-tabs bar_tabs left" role="tablist">
+                  <li role="presentation">
+                    <a href="#tab_content11" id="activity-tabb" role="tab" data-toggle="tab" aria-controls="activity"
+                      aria-expanded="true">
+                      Activity
+                    </a>
+                  </li>
+                  <li role="presentation" class="">
+                    <a href="#tab_content22" role="tab" id="cost-tabb" data-toggle="tab" aria-controls="costs"
+                      aria-expanded="false">
+                      Cost
+                    </a>
+                  </li>
+                  <li role="presentation" class="">
+                    <a href="#tab_content33" role="tab" id="cost-tabb" data-toggle="tab" aria-controls="mileston"
+                      aria-expanded="false">
+                      Milestones
+                    </a>
+                  </li>
+                </ul>
+
+                <!-- Tabs Content-->
+                <div id="myTabContent" class="tab-content">
+
+                  <!-- Tabs Content: Activities -->
+                  <div role="tabpanel" class="tab-pane fade active in" id="tab_content11"
+                    aria-labelledby="activity-tab">
+                    <a onclick="return open_modal('{% url 'projects:projectjournal_create' project.pk %}')"
+                      class="btn btn-primary btn-xs"> Add
+                    </a>
+
+                    <ul class="list-unstyled timeline">
+                      {% for activity in project.projectjournal_set.all %}
+                      <li>
+                        <div class="block">
+                          <div class="block_content">
+                            <h2 class="title">
+                              <a href="#"
+                                onclick="return open_modal('{% url 'projects:projectjournal_edit' project_pk=project.pk pk=activity.pk %}')">
+                                {{activity.title}}
+                              </a>
+                              {% if activity.due_date and activity.is_completed == False %}
+                              {% else %}
+                              <i class="fa fa-check blue"></i>
+                              {% endif %}
+                              <a onclick="return open_modal('{% url 'projects:projectjournal_delete' project_pk=project.pk pk=activity.pk %}')"
+                                class="btn btn-xs" style="float:right">
+                                <i class="fa fa-remove"></i>
+                              </a>
+                            </h2>
+                            <div class="byline">
+                              <span>{{activity.entry_date}}</span>
+                              {% if activity.due_date %}
+                              <a>due on {{activity.due_date}}</a>
+                              {% endif %}
+                            </div>
+                            <p class="excerpt">
+                              {{activity.comment}}
+                            </p>
+                          </div>
+                        </div>
+                      </li>
+
+                      {% endfor %}
+                    </ul>
+                  </div>
+
+                  <!-- Tabs Content: Costs -->
+                  <div role="tabpanel" class="tab-pane fade" id="tab_content22" aria-labelledby="cost-tab">
+                    <a onclick="return open_modal('{% url 'projects:projectcost_create' project.pk %}')"
+                      class="btn btn-primary btn-xs">Add</a>
+                    <table class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Amount</th>
+                          <th>Currency</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                          <th>#Edit</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for cost in project.projectcost_set.all %}
+                        <tr>
+                          <td class="text-center">{{cost.amount}}</td>
+                          <td class="text-center">{{cost.currency}}</td>
+                          <td class="text-center">{{cost.expense_type}}</td>
+                          <td>{{cost.description}}</td>
+                          <td class="text-center">
+                            <a onclick="return open_modal('{% url 'projects:projectcost_edit' project.pk cost.pk %}')"
+                              class=" btn btn-info btn-xs"><i class="fa fa-pencil"></i></a>
+                            <a onclick="return open_modal('{% url 'projects:projectcost_delete' project.pk cost.pk %}')"
+                              class=" btn btn-danger btn-xs"><i class="fa fa-remove"></i></a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- Tabs Content: Milestones -->
+                  <div role="tabpanel" class="tab-pane fade" id="tab_content33" aria-labelledby="cost-tab">
+                    <a onclick="return open_modal('{% url 'projects:projectmilestone_create' project.pk %}')"
+                      class="btn btn-primary btn-xs">Add</a>
+                    <table class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Milestone</th>
+                          <th>Start Date</th>
+                          <th>Due Date</th>
+                          <th>Duration</th>
+                          <th>Status</th>
+                          <th>#Edit</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for milestone in project.projectmilestone_set.all %}
+                        <tr>
+                          <td class="text-center">{{milestone.milestone}}</td>
+                          <td class="text-center">{{milestone.start_date}}</td>
+                          <td class="text-center">{{milestone.due_date}}</td>
+                          <td class="text-center">{{milestone.duration|floatformat:0}}</td>
+                          <td class="text-center">
+                            {% if milestone.is_completed == True %}
+                            <a><i style="color:green" class="fa fa-check"></i></a>
+                            {% endif %}
+                          </td>
+                          <td class="text-center">
+                            <a onclick="return open_modal('{% url 'projects:projectmilestone_edit' project.pk milestone.pk %}')"
+                              class=" btn btn-info btn-xs"><i class="fa fa-pencil"></i></a>
+                            <a onclick="return open_modal('{% url 'projects:projectmilestone_delete' project.pk milestone.pk %}')"
+                              class=" btn btn-danger btn-xs"><i class="fa fa-remove"></i></a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- start project-detail sidebar -->
+            <div class="col-md-3 col-sm-3 col-xs-12">
+
+              <section class="panel">
+
+                <div class="x_title">
+                  <h2>
+                    Details
+                    <a href="{% url 'projects:project_update' project.pk %}" class="btn btn-default btn-xs">
+                      <i class="fa fa-pencil"></i>
+                    </a>
+                  </h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                  <div class="project_detail">
+                    <p class="title">Customer</p>
+                    <p>{{project.customer.vendor_name}} ({{project.customer.vendor_code|unlocalize}})</p>
+                    <p class="title">Part Affected</p>
+                    <p>{{project.part_number_affected}}</p>
+                    <p class="title">Tool Affected</p>
+                    <p>{{project.tool_serial_number_affected}}<p>
+                    {% if project.design_job %}
+                    <p class="title">Design Job</p>
+                    <p>{{project.design_job}}</p>
+                    {% endif %}
+                    <p class="title">Description</p>
+                    <p>{{project.project_description}}</p>
+                    <p class="title">Justification</p>
+                    <p>{{project.project_justification}}</p>
+
+                  </div>
+
+                  <div class="x_title">
+                    <h2>Project files</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="panel-body">
+                    <ul class="list-unstyled project_files">
+                      {% for document in project.projectdocument_set.all %}
+                      <li>
+                        <a onclick="return open_modal('{% url 'projects:projectdocument_delete' project_pk=project.pk pk=document.pk %}')"
+                          class="btn btn-xs" style="float:right">
+                          <i class="fa fa-remove"></i>
+                        </a>
+                        <a href="{{document.document.url}}">{{document.title}} ({{document.document_type}})</a>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <br />
+
+                    <div class="text-center mtop20">
+                      <a onclick="return open_modal('{% url 'projects:projectdocument_upload' project_pk=project.pk %}')"
+                        class="btn btn-sm btn-primary">Add files</a>
+                    </div>
+                  </div>
+                </div>
+
+              </section>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Pop Up-->
+<div id="popup" class="modal fade" role="dialog">
+
+
+  {% endblock content %}
+
+  {% block javascripts %}
+  {{ block.super }}
+  <!-- ECharts -->
+  <script src="/static/vendors/echarts/dist/echarts.min.js"></script>
+  <!-- Datatables -->
+  <script src="/static/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+  <script src="/static/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+  <script src="/static/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+  <script src="/static/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+  <script src="/static/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+  <script src="/static/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+  <script src="/static/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+  <script src="/static/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+  <script src="/static/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+  <script src="/static/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+  <script src="/static/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+  <script src="/static/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+  <script src="/static/vendors/jszip/dist/jszip.min.js"></script>
+  <script src="/static/vendors/pdfmake/build/pdfmake.min.js"></script>
+  <script src="/static/vendors/pdfmake/build/vfs_fonts.js"></script>
+  <script>
+    function open_modal(url) {
+      $('#popup').load(url, function () {
+        $(this).modal('show');
+      });
+      return false;
+    }
+
+  </script>
+  {% endblock javascripts %}

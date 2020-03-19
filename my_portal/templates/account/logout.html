@@ -1,0 +1,25 @@
+{% extends "base_site.html" %}
+
+{% block title %} Log Out {% endblock title %}
+{% block stylesheets %}
+{{ block.super }}
+{% endblock stylesheets %}
+
+{% block body_class %}login{% endblock body_class %}
+
+{% block body %}
+<div class="login_wrapper">
+  <section class="login_content">
+    <h1>Log Out</h1>
+
+    <p>Are you sure you want to log out?</p>
+
+    <form method="post" action="{% url 'account_logout' %}">
+      {% csrf_token %}
+      <button class="btn btn-danger" type="submit">Log Out</button>
+    </form>
+  </div>
+</div>
+
+
+{% endblock body %}

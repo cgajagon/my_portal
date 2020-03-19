@@ -1,0 +1,31 @@
+{% extends "base_site.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Condition Assessment {% endblock title %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>New Condition Assessment - Tool Serial Number {{tool.tool_serial_number}} at {{tool.location}}</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <br />
+            <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" method="POST">
+              {% csrf_token %}
+              {{ form|crispy }}
+              {{ activation.management_form }}
+              <input class="btn btn-success" type="submit" value="Save">
+              <button onclick="window.history.back();" class="btn btn-default" type="button">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

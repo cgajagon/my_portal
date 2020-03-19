@@ -1,0 +1,230 @@
+{% extends "base_site.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Detail Tooling {% endblock title %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>Tool Serial Number: {{tool.tool_serial_number}}</h3>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <div class="row">
+
+      <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="x_panel tile fixed_height_320">
+          <div class="x_title">
+            <h2>
+              Details 
+              <a href="{% url 'tooling:tool_update' tool.pk %}" class="btn btn-default btn-xs">
+                <i class="fa fa-pencil"></i>
+              </a>
+            </h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <p><b>Tool Serial Number: </b>{{tool.tool_serial_number}}</p>
+            <p><b>Status: </b>{{tool.status}}</p>
+            <p><b>Year Built: </b>{{tool.year_built}}</p>
+            <p><b>Description: </b>{{tool.tool_description}}</p>
+            <p><b>Part Produced: </b>
+              {% for part in tool.part_produced.all %}
+              <a type="button" class="btn btn-default btn-xs" href="#">{{part}}</a>
+              {% endfor %}
+            </p>
+            <p><b>Location: </b>{{tool.location.vendor_name}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="x_panel tile fixed_height_320 overflow_hidden">
+          <div class="x_title">
+            <h2>Current Condition</h2>
+
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+              <div id="doughnutContainer"  style="height: 140px; width: 100%"></div>
+          </div>
+          <div class="x_content text-center">
+              <div class="divider"></div>
+
+            {% for risk in last_risk %}
+            <h4 class="text-center">Risk Assessment</h4>
+            {% if risk.risk == "High" %}
+            <p><i class="fa fa-circle red"></i> High</p>
+            {% elif risk.risk == "Medium" %}
+            <p><i class="fa fa-circle" style="color:yellow"></i> Medium</p>
+            {% elif risk.risk == "Low" %}
+            <p><i class="fa fa-circle green"></i> Low</p>
+            {% endif %}
+            <small>{{risk.date_assessment}}</small>
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>Condition History</h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li><a class="close-link"><i class="fa fa-close"></i></a>
+              </li>
+              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+          </div>
+          <div class="clearfix"></div>
+
+          <div class="x_content">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Condition</th>
+                  <th>Total Expected Life</th>
+                  <th>Remaining Expected Life</th>
+                  <th>Risk Estimation</th>
+                  <th>Risk Assessment</th>
+                  <th>Date Evaluation</th>
+                  <th># Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for condition in tool.toolcondition_set.all %}
+                <tr style="text:center">
+                  <!-- Tool Condition Assessed by User -->
+                  <td>{{condition.tool_condition}}</td>
+                  <td>{{condition.life}}</td>
+                  <td>{{condition.life_remaining}}</td>
+                  <!-- Risk Automatically Evaluated -->
+                  <td class="text-center">
+                  {% if condition.get_risk_evaluated <= 1 %} 
+                  <i class="fa fa-circle red"></i> High
+                  {% elif condition.get_risk_evaluated > 1 and condition.get_risk_evaluated <= 3 %} 
+                  <i class="fa fa-circle" style="color:yellow"></i> Medium
+                  {% elif condition.get_risk_evaluated > 3 %}
+                  <i class="fa fa-circle green"></i> Low
+                  {% elif condition.get_risk_evaluated %}
+                  {% endif %}
+                  </td>
+                  <!-- Risk Assessed by User -->
+                  {% if condition.risk == "High" %}
+                  <td class="text-center"><i class="fa fa-circle red"></i> High <br><small>{{tool.date_assessment}}</small></td>
+                  {% elif condition.risk == "Medium" %}
+                  <td class="text-center"><i class="fa fa-circle" style="color:yellow"></i> Medium <br><small>{{tool.date_assessment}}</small></td>
+                  {% elif condition.risk == "Low" %}
+                  <td class="text-center"><i class="fa fa-circle green"></i> Low <br><small>{{tool.date_assessment}}</small></td>
+                  {% endif %}
+                  <td class="text-center">{{condition.date_assessment}}</td>
+
+                  <td class="text-center">
+                    <a href="{% url 'tooling:toolcondition_update' tool.pk condition.pk %}" class=" btn btn-info btn-xs"><i
+                        class="fa fa-pencil"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <a class='btn btn-primary' href="{% url 'tooling:toolcondition_new' tool.pk %}">
+              Add Assessment
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+{{ block.super }}
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<script>
+  window.onload = function () {
+    $.ajax({
+      url: '/tooling/API/toolconditions/{{tool_inspected}}',
+      type: "GET",
+      dataType: 'json',
+      success: function (data) {
+        total_life_data = $.map(data, function (val, i) {
+          var total_life_data = { x: Date.parse(val.date_assessment), y: parseInt(val.life) }
+          return total_life_data
+        });
+        remaining_life_data = $.map(data, function (val, i) {
+          var remaining_life_data = { x: Date.parse(val.date_assessment), y: parseInt(val.life_remaining) }
+          return remaining_life_data
+        });
+        var chart = new CanvasJS.Chart("chartContainer", {
+          animationEnabled: true,
+          axisX: {
+            interval: 4,
+            intervalType: "month",
+          },
+          axisY: {
+            includeZero: true,
+          },
+          toolTip: {
+            shared: true
+          },
+          legend: {
+            fontSize: 12
+          },
+          data: [{
+            xValueType: "YYYY-MM",
+            type: "splineArea",
+            showInLegend: true,
+            name: "Total Life",
+            dataPoints: total_life_data,
+            color:'#79a1d8'
+          },
+          {
+            xValueType: "dateTime",
+            type: "splineArea",
+            showInLegend: true,
+            name: "Remaining Life",
+            dataPoints: remaining_life_data,
+            color:'#245fb2'
+          }]
+        });
+        var doughnut = new CanvasJS.Chart("doughnutContainer", {
+          data: [{
+            type: "pie",
+            indexLabelFontSize: 17,
+            indexLabelPlacement: "inside",
+            indexLabel: "{y}",
+            yValueFormatString: "##0\"%\"",
+            dataPoints: [
+              {% for risk in last_risk %}
+              { y: (({{risk.life}} - {{risk.life_remaining}}) / {{risk.life}}) * 100, label: "Life Consumed", color:'#A1BDE3' },
+              { y: ({{risk.life_remaining}} / {{risk.life}}) * 100, label: "Life Remaining", color:'#6C90C2' },
+              {% endfor %}
+            ]
+          }]
+        });
+        doughnut.render();
+        chart.render();
+      }
+    })
+
+
+  }
+</script>
+
+{% endblock javascripts %}

@@ -1,0 +1,41 @@
+<div class="left_col scroll-view">
+  <div class="navbar nav_title" style="border: 0;">
+    <a href="#" class="site_title"><i class="fa fa-spinner"></i>
+      <span>My xPortal</span>
+    </a>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <br />
+
+  <!-- sidebar menu -->
+  <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <div class="menu_section">
+      <h3>General</h3>
+      <ul class="nav side-menu">
+        <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="{% url 'projects:dashboard' %}">Dashboard</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="menu_section">
+      <h3>Projects App</h3>
+      <ul class="nav side-menu">
+        <li><a><i class="fa fa-flask"></i> Projects <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="{% url 'projects:project_list' %}">Projects</a></li>
+          </ul>
+        </li>
+        <li><a><i class="fa fa-folder-open-o"></i> Archive <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="{% url 'projects:project_list_archive' %}">Projects</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /sidebar menu -->
+</div>

@@ -1,0 +1,22 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <form method="post" action="{% url 'projects:projectdocument_upload' project_pk %}" enctype="multipart/form-data">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">x</button>
+        <h3>Upload Document</h3>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        {{ form|crispy }}
+      </div>
+      <div class="modal-footer">
+        <div class="col-lg-12 text-right">
+          <input class="btn btn-primary" type="submit" value="Submit">
+          <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

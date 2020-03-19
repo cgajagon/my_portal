@@ -1,0 +1,177 @@
+{% extends "base_site.html" %}
+{% load l10n %}
+
+{% block title %} Projects {% endblock title %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link href="/static/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="/static/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="/static/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+<link href="/static/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+<link href="/static/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>Projects
+              {% if supplier %}
+              : {{supplier}}
+              {% endif %}
+            </h2>
+            <p style="text-align: right;">
+              {% if suppliers %}
+              <a type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target=".bs-example-modal-sm"><i
+                  class="fa fa-filter"></i></a>
+              {% else %}
+              <a class="btn btn-default btn-xs" href="{% url 'projects:project_list' %}">Clear Filter </a>
+              {% endif %}
+            </p>
+
+            <div class="clearfix"></div>
+
+          </div>
+          <div class="x_content">
+            <!-- start project list -->
+            <table id="datatable-buttons" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Project Name</th>
+                  <th>Customer</th>
+                  <th>Part Affected</th>
+                  <th>Tool Affected</th>
+                  <th>Start</th>
+                  <th>Finish</th>
+                  <th>Status</th>
+                  <th style="width: 12%" class="text-center"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for project in project_list %}
+                <tr>
+                  <td>{{project.finance_ID|unlocalize}}</td>
+                  <td><a href="{% url 'projects:project_detail' project.pk %}">{{project.title}}</a></td>
+                  <td>{{project.customer.vendor_name}}</td>
+                  <td>{{project.part_number_affected}}</td>
+                  <td>{{project.tool_serial_number_affected}}</td>
+                  <td>{{project.start_date}}</td>
+                  <td>{{project.end_date}}</td>
+                  <td>
+                    {% if project.status  == 'Active' %}
+                    <a onclick="return open_modal('{% url 'projects:project_update_status' project.pk %}')"
+                      type="button" class="btn btn-success btn-xs">{{project.status}}</a>
+                    {% elif project.status  == 'Queued' %}
+                    <a onclick="return open_modal('{% url 'projects:project_update_status' project.pk %}')"
+                      type="button" class="btn btn-info btn-xs">{{project.status}}</a>
+                    {% elif project.status  == 'Inactive' %}
+                    <a onclick="return open_modal('{% url 'projects:project_update_status' project.pk %}')"
+                      type="button" class="btn btn-default btn-xs">{{project.status}}</a>
+                    {% elif project.status  == 'Canceled' %}
+                    <button type="button" class="btn btn-default btn-xs">{{project.status}}</button>
+                    {% elif project.status  == 'Completed' %}
+                    <button type="button" class="btn btn-default btn-xs">{{project.status}}</button>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <a href="{% url 'projects:project_update' project.pk %}" class="btn btn-primary btn-xs"><i
+                        class="fa fa-pencil"></i></a>
+                    <a onclick="return open_modal('{% url 'projects:project_delete' project.pk %}')"
+                      class="btn btn-danger btn-xs"><i class="fa fa-remove"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <!-- end project list -->
+          </div>
+          <a class="btn btn-info" href="{% url 'projects:project_create' %}">New </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Supplier Filter -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Select a Supplier</h4>
+      </div>
+      <div class="modal-body">
+        <ul id="myUL" class="to_do">
+          <input style="margin-bottom: 10px;" class="textinput textInput form-control" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for name...">
+          {% for supplier in suppliers%}
+          <a href="{% url 'projects:project_list_supplier' supplier.vendor_name %}">
+            <div class="mail_list">
+                <h3>{{supplier.vendor_name}}</h3>
+                <p>Vendor Code: {{supplier.vendor_code|unlocalize}}</p>
+            </div>
+          </a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Pop Up-->
+<div id="popup" class="modal fade" role="dialog"></div>
+
+{% endblock content %}
+{% block javascripts %}
+{{ block.super }}
+<script src="/static/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/static/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="/static/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/static/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="/static/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="/static/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="/static/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="/static/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="/static/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="/static/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="/static/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="/static/vendors/jszip/dist/jszip.min.js"></script>
+<script src="/static/vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="/static/vendors/pdfmake/build/vfs_fonts.js"></script>
+
+<script>
+  function open_modal(url) {
+    $('#popup').load(url, function () {
+      $(this).modal('show');
+    });
+    return false;
+  }
+</script>
+<script>
+  function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName("div");
+    for (i = 0; i < li.length; i++) {
+      a = li[i].getElementsByTagName("h3")[0];
+      txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = "";
+      } else {
+        li[i].style.display = "none";
+      }
+    }
+  }
+</script>
+
+{% endblock javascripts %}

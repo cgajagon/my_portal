@@ -1,0 +1,21 @@
+<div class="input-field">
+  <i class="material-icons prefix">all_out</i>
+  <input type="text" readonly value="{{ process.planet }}">
+  <label class="active">Planet</label>
+</div>
+<div class="input-field">
+  <i class="material-icons prefix">create</i>
+  <textarea class="materialize-textarea" readonly>{{ process.description }}</textarea>
+  <label class="active">Description</label>
+</div>
+<div style="padding-left:3em">
+  <label>Approved<br/><br/></label>
+  <div class="switch">
+    <label>
+      No
+      <input type="checkbox" disabled="disabled" {% if process.approved %}checked{% endif %}>
+      <span class="lever"></span>
+      Yes
+    </label><br/><br/>
+  </div>
+</div>

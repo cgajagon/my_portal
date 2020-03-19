@@ -1,0 +1,22 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-md">
+  <div class="modal-content">
+      <form role="form" action="{% url 'projects:projectjournal_edit_status' project_related object.pk %}" method="post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Activity</h3>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          {{form|crispy}}
+        </div>
+        <div class="modal-footer">
+          <div class="col-lg-12 text-right">
+              <input class="btn btn-primary" type="submit" value="Save">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>
